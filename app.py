@@ -14,13 +14,21 @@ def hello():
 @app.route("/v1/<filename>")
 def getConfig(filename):
     git = Github()
-    repo = git.get_repo(git_repo);
-    content = repo.get_file_contents(filename.split('.')[0] +'.yml')
+    
+    user=git_repo.split('/')[0]
+    repositories=git_repo.split('/')[1]
+
+    	#repos=git.get_user(user).get_repos(repositories)
+    for repos in git.get_user(user).get_repos(repositories):
+		if repos.name == repositories:
+			repository = repos.name
+			finalRepo = repos
+			print repos.name
+    
+    content = finalRepo.get_file_contents(filename.split('.')[0] +'.yml')
     #content=content.decoded_content
     if  filename.endswith('.yml'):
-        with open(filename,'r') as yml:
-        	data=yml.read().replace('\n','')
-        	return data
+        return content.decoded_content
     elif filename.endswith('.json'):
         return json.dumps(yaml.load(content.decoded_content),sort_keys=False, indent=2)
         
